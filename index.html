@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Bukti Pengerjaan Misi - Studio Grid</title>
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Grid Misi">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-surface: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --accent: #2563eb;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --danger: #dc2626;
+      --frame-bg: #ffffff;
+      --frame-border: #0f172a;
+      --transition-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-surface);
+      color: var(--text-main);
+      padding: 12px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      animation: fadeInApp 0.6s var(--transition-smooth);
+    }
+
+    @keyframes fadeInApp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* PWA Install Banner */
+    .pwa-banner {
+      display: none;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border-radius: 8px;
+      padding: 12px 16px;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+      animation: slideDown 0.4s var(--transition-smooth);
+    }
+
+    .pwa-banner.active {
+      display: flex;
+    }
+
+    .pwa-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pwa-info span {
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    /* Header */
+    .top-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 14px 16px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.3s var(--transition-smooth);
+    }
+
+    .top-bar .title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .top-bar h1 {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text-main);
+      text-transform: uppercase;
+    }
+
+    .svg-icon {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Control Panel */
+    .control-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .button-group-top {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s var(--transition-smooth);
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: #ffffff;
+      border-color: #3b82f6;
+    }
+
+    .btn-secondary {
+      background-color: #334155;
+      color: var(--text-main);
+      border-color: #475569;
+    }
+
+    .btn-success {
+      background-color: #059669;
+      color: #ffffff;
+      border-color: #10b981;
+      flex: 1;
+    }
+
+    .btn-danger-outline {
+      background-color: transparent;
+      color: #f87171;
+      border-color: #ef4444;
+    }
+
+    .btn-download-action {
+      background-color: #d97706;
+      color: #ffffff;
+      border-color: #f59e0b;
+      width: 100%;
+    }
+
+    .btn-pwa {
+      background: #ffffff;
+      color: #1e293b;
+      padding: 6px 12px;
+      font-size: 11px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    /* Drawer Preset Judul */
+    .preset-drawer {
+      display: none;
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 10px;
+      margin-top: 4px;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: all 0.3s var(--transition-smooth);
+    }
+
+    .preset-drawer.active {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .preset-drawer label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .preset-drawer textarea {
+      width: 100%;
+      height: 70px;
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      border-radius: 4px;
+      color: var(--text-main);
+      padding: 8px;
+      font-size: 12px;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .preset-drawer textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 5px;
+    }
+
+    /* Input Item list animation */
+    .input-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .input-item {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: itemSlideIn 0.35s var(--transition-smooth);
+      transition: all 0.25s var(--transition-smooth);
+    }
+
+    @keyframes itemSlideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .input-item img.thumb {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      background: #090d16;
+      border-radius: 4px;
+      border: 1px solid var(--card-border);
+    }
+
+    .input-item .field-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .input-item select, .input-item input[type="text"] {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .input-item select:focus, .input-item input[type="text"]:focus {
+      border-color: var(--accent);
+    }
+
+    .btn-delete-item {
+      background: transparent;
+      border: none;
+      color: #f87171;
+      padding: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: background 0.2s ease;
+    }
+
+    .btn-delete-item:hover {
+      background: #334155;
+    }
+
+    /* Preview Container animation */
+    .preview-container {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      animation: previewFadeIn 0.4s var(--transition-smooth);
+    }
+
+    @keyframes previewFadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    #photo-frame {
+      background-color: var(--frame-bg);
+      border: 6px solid var(--frame-border);
+      border-radius: 4px;
+      padding: 12px;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    .frame-header {
+      text-align: center;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+
+    .frame-header h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      align-items: start;
+    }
+
+    .grid-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      padding: 6px;
+      border-radius: 3px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      animation: cardPop 0.3s var(--transition-smooth);
+    }
+
+    @keyframes cardPop {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .grid-card-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #0f172a;
+      text-align: center;
+      padding-bottom: 4px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid #e2e8f0;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      word-break: break-word;
+    }
+
+    .grid-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 2px;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- PWA Install Banner -->
+    <div id="pwaBanner" class="pwa-banner">
+      <div class="pwa-info">
+        <svg class="svg-icon" style="color: #fff;" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span>Instal Aplikasi PWA</span>
+      </div>
+      <button id="installPwaBtn" class="btn btn-pwa">INSTAL</button>
+    </div>
+
+    <!-- Header App -->
+    <div class="top-bar">
+      <div class="title-group">
+        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <h1>Grid Generator</h1>
+      </div>
+      <span style="font-size: 10px; color: var(--text-muted); font-weight: 600;">v2.2 PWA</span>
+    </div>
+
+    <!-- Control Panel -->
+    <div class="control-panel">
+      <div class="button-group-top">
+        <label for="imageInput" class="btn btn-primary">
+          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+          Pilih Foto
+        </label>
+        <input type="file" id="imageInput" accept="image/*" multiple>
+
+        <button id="togglePresetBtn" class="btn btn-secondary">
+          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+          Kelola Judul
+        </button>
+      </div>
+
+      <!-- Drawer untuk Memasukkan List Judul Cepat -->
+      <div id="presetDrawer" class="preset-drawer">
+        <label>Input List Judul (1 Judul Per Baris):</label>
+        <textarea id="presetInput" placeholder="Contoh:&#10;Misi 1 - Posting Story&#10;Misi 2 - Like & Comment&#10;Misi 3 - Share Link"></textarea>
+        <button id="savePresetBtn" class="btn btn-secondary" style="padding: 6px; font-size: 11px;">Simpan Preset Judul</button>
+      </div>
+
+      <!-- List Foto yang Diunggah -->
+      <div id="inputList" class="input-list"></div>
+
+      <!-- Action Row -->
+      <div id="actionRow" class="action-row" style="display: none;">
+        <button id="combineBtn" class="btn btn-success">
+          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          Proses & Render
+        </button>
+        <button id="clearAllBtn" class="btn btn-danger-outline" title="Hapus Semua Foto">
+          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          Hapus Semua
+        </button>
+      </div>
+    </div>
+
+    <!-- Area Preview Hasil Bingkai -->
+    <div id="previewContainer" class="preview-container">
+      <div id="photo-frame">
+        <div class="frame-header">
+          <h2>BUKTI PENGERJAAN MISI</h2>
+        </div>
+        <div class="photo-grid" id="photoGrid"></div>
+      </div>
+
+      <button id="downloadBtn" class="btn btn-download-action">
+        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        Download Gambar (.PNG)
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Register Service Worker untuk PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW Registered'))
+          .catch(err => console.log('SW Reg Fail:', err));
+      });
+    }
+
+    // PWA Install Prompt Handler
+    let deferredPrompt;
+    const pwaBanner = document.getElementById('pwaBanner');
+    const installPwaBtn = document.getElementById('installPwaBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      pwaBanner.classList.add('active');
+    });
+
+    installPwaBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        pwaBanner.classList.remove('active');
+      }
+      deferredPrompt = null;
+    });
+
+    const imageInput = document.getElementById('imageInput');
+    const inputList = document.getElementById('inputList');
+    const combineBtn = document.getElementById('combineBtn');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    const actionRow = document.getElementById('actionRow');
+    const previewContainer = document.getElementById('previewContainer');
+    const photoGrid = document.getElementById('photoGrid');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const togglePresetBtn = document.getElementById('togglePresetBtn');
+    const presetDrawer = document.getElementById('presetDrawer');
+    const presetInput = document.getElementById('presetInput');
+    const savePresetBtn = document.getElementById('savePresetBtn');
+
+    let uploadedFilesData = [];
+    let titlePresets = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedPresets = localStorage.getItem('grid_title_presets');
+      if (savedPresets) {
+        presetInput.value = savedPresets;
+        titlePresets = savedPresets.split('\n').map(t => t.trim()).filter(t => t.length > 0);
+      }
+    });
+
+    togglePresetBtn.addEventListener('click', () => {
+      presetDrawer.classList.toggle('active');
+    });
+
+    savePresetBtn.addEventListener('click', () => {
+      const rawText = presetInput.value;
+      localStorage.setItem('grid_title_presets', rawText);
+      titlePresets = rawText.split('\n').map(t => t.trim()).filter(t => t.length > 0);
+      renderInputList();
+      presetDrawer.classList.remove('active');
+    });
+
+    const readFileAsDataURL = (file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    };
+
+    imageInput.addEventListener('change', async function(e) {
+      const files = Array.from(e.target.files);
+      if (files.length === 0) return;
+
+      const currentLength = uploadedFilesData.length;
+
+      for (let i = 0; i < files.length; i++) {
+        const src = await readFileAsDataURL(files[i]);
+        const targetIndex = currentLength + i;
+        uploadedFilesData.push({
+          id: Date.now() + Math.random(),
+          src: src,
+          title: titlePresets[targetIndex] || ''
+        });
+      }
+
+      imageInput.value = '';
+      renderInputList();
+    });
+
+    function renderInputList() {
+      inputList.innerHTML = '';
+
+      if (uploadedFilesData.length === 0) {
+        actionRow.style.display = 'none';
+        previewContainer.style.display = 'none';
+        return;
+      }
+
+      actionRow.style.display = 'flex';
+
+      uploadedFilesData.forEach((item, index) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'input-item';
+
+        let selectOptionsHTML = '<option value="">-- Pilih Judul --</option>';
+        titlePresets.forEach(title => {
+          const isSelected = title === item.title ? 'selected' : '';
+          selectOptionsHTML += `<option value="${title}" ${isSelected}>${title}</option>`;
+        });
+
+        itemDiv.innerHTML = `
+          <img src="${item.src}" class="thumb">
+          <div class="field-group">
+            <select class="preset-select" data-index="${index}">
+              ${selectOptionsHTML}
+            </select>
+            <input type="text" placeholder="Atau ketik manual..." value="${item.title}" data-index="${index}" class="manual-input">
+          </div>
+          <button class="btn-delete-item" data-index="${index}" title="Hapus Foto Ini">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </button>
+        `;
+
+        inputList.appendChild(itemDiv);
+
+        const selectEl = itemDiv.querySelector('.preset-select');
+        const inputEl = itemDiv.querySelector('.manual-input');
+
+        selectEl.addEventListener('change', (ev) => {
+          const idx = ev.target.getAttribute('data-index');
+          const val = ev.target.value;
+          inputEl.value = val;
+          uploadedFilesData[idx].title = val;
+        });
+
+        inputEl.addEventListener('input', (ev) => {
+          const idx = ev.target.getAttribute('data-index');
+          uploadedFilesData[idx].title = ev.target.value;
+        });
+
+        const deleteBtn = itemDiv.querySelector('.btn-delete-item');
+        deleteBtn.addEventListener('click', (ev) => {
+          const idx = ev.currentTarget.getAttribute('data-index');
+          uploadedFilesData.splice(idx, 1);
+          renderInputList();
+        });
+      });
+    }
+
+    clearAllBtn.addEventListener('click', () => {
+      if (confirm('Yakin ingin menghapus semua foto yang telah dimasukkan?')) {
+        uploadedFilesData = [];
+        renderInputList();
+      }
+    });
+
+    combineBtn.addEventListener('click', function() {
+      photoGrid.innerHTML = '';
+
+      uploadedFilesData.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'grid-card';
+
+        const titleText = item.title.trim() === '' ? 'FOTO' : item.title;
+
+        card.innerHTML = `
+          <div class="grid-card-title">${titleText}</div>
+          <img src="${item.src}">
+        `;
+
+        photoGrid.appendChild(card);
+      });
+
+      previewContainer.style.display = 'flex';
+      previewContainer.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    downloadBtn.addEventListener('click', function() {
+      const frameArea = document.getElementById('photo-frame');
+
+      html2canvas(frameArea, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'Bukti-Pengerjaan-Misi.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    });
+  </script>
+</body>
+</html>
