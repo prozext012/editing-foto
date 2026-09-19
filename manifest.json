@@ -3,16 +3,16 @@
   "name": "Bukti Pengerjaan Misi - Studio Grid",
   "icons": [
     {
-      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='112' fill='%230f172a'/><rect x='80' y='80' width='150' height='150' rx='20' fill='%232563eb'/><rect x='282' y='80' width='150' height='150' rx='20' fill='%23334155'/><rect x='80' y='282' width='150' height='150' rx='20' fill='%23334155'/><rect x='282' y='282' width='150' height='150' rx='20' fill='%232563eb'/><path d='M110 155h90M312 155h90M110 357h90M312 357h90' stroke='%23ffffff' stroke-width='18' stroke-linecap='round'/></svg>",
+      "src": "icon.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='112' fill='%230f172a'/><rect x='80' y='80' width='150' height='150' rx='20' fill='%232563eb'/><rect x='282' y='80' width='150' height='150' rx='20' fill='%23334155'/><rect x='80' y='282' width='150' height='150' rx='20' fill='%23334155'/><rect x='282' y='282' width='150' height='150' rx='20' fill='%232563eb'/><path d='M110 155h90M312 155h90M110 357h90M312 357h90' stroke='%23ffffff' stroke-width='18' stroke-linecap='round'/></svg>",
+      "src": "icon.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "start_url": "./index.html",

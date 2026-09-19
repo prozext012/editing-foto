@@ -1,8 +1,9 @@
-const CACHE_NAME = 'grid-misi-v2';
+const CACHE_NAME = 'grid-misi-v3';
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
+  './icon.png',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@700&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
 ];
